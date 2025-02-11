@@ -1,0 +1,6 @@
+- name: Deploy Backend & Frontend
+  hosts: my-server
+  become: true
+  roles:
+    - backend
+    - frontend
