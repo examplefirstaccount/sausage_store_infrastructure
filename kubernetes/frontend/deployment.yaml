@@ -4,7 +4,7 @@ metadata:
   name: frontend
   namespace: default
 spec:
-  revisionHistoryLimit: 15
+  revisionHistoryLimit: 12 # Keeps 12 old ReplicaSets for potential rollbacks (default: 10)
   replicas: 1
   strategy:
     type: Recreate

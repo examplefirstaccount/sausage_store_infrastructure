@@ -6,11 +6,11 @@ metadata:
   labels:
     app: backend-report
 spec:
-  revisionHistoryLimit: 15
+  revisionHistoryLimit: 12 # Keeps 12 old ReplicaSets for potential rollbacks (default: 10)
+  replicas: 2
   selector:
     matchLabels:
       app: backend-report
-  replicas: 2
   strategy:
     type: Recreate
   template:
@@ -35,3 +35,28 @@ spec:
         ports:
         - containerPort: 8080
           name: backend-report
+      affinity:
+        # Prevents scheduling multiple backend-report pods on the same node (hostname)
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - backend-report
+              topologyKey: kubernetes.io/hostname # Spread across different nodes
+        # Encourages pods to be in the same zone (for better latency) while still being on different nodes
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - backend-report
+              topologyKey: topology.kubernetes.io/zone # Prefer same zone for latency
