@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sausage-backend-report-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: backend-report
+    app.kubernetes.io/name: sausage-backend-report
+    app.kubernetes.io/component: backend-report
+    env: "{{ .Values.environment }}" 
+{{- include "labels" . | indent 4 }}
+spec:
+  revisionHistoryLimit: 12 # Keeps 12 old ReplicaSets for potential rollbacks (default: 10)
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: backend-report
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: backend-report
+    spec:
+      containers:
+      - name: backend-report
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        envFrom:
+        - configMapRef:
+            name: backend-report-config
+        ports:
+        - containerPort: 8080
+          name: backend-report
+      affinity:
+        # Prevents scheduling multiple backend-report pods on the same node (hostname)
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - backend-report
+              topologyKey: kubernetes.io/hostname # Spread across different nodes
+        # Encourages pods to be in the same zone (for better latency) while still being on different nodes
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 50
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - backend-report
+              topologyKey: topology.kubernetes.io/zone # Prefer same zone for latency

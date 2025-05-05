@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  REPORT_PATH: "/var/www-data/htdocs"
+  SPRING_DATASOURCE_URL: "{{ .Values.postgresUrl }}"
+  SPRING_DATA_MONGODB_URI: "{{ .Values.mongoUrl }}"

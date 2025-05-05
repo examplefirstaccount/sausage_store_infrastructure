@@ -1,0 +1,6 @@
+image: postgres:15
+replicas: 1
+storage: 1Gi
+user: sausage_user
+password: sausage_password
+db: sausage_db

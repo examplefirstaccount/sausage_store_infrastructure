@@ -1,0 +1,71 @@
+postgres:
+  image: postgres:15
+  replicas: 1
+  storage: 1Gi
+  user: sausage_user
+  password: sausage_password
+  db: sausage_db
+
+mongodb:
+  image: mongo:6
+  replicas: 1
+  storage: 1Gi
+  user: sausage_user
+  password: sausage_password
+
+backend:
+  image:
+    repository: selnastol/sausage-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 1000m
+      memory: 500Mi
+  enableVPA: false
+  postgres:
+    user: sausage_user
+    password: sausage_password
+  postgresUrl: jdbc:postgresql://postgres:5432/sausage_db
+  mongoUrl: mongodb://sausage_user:sausage_password@mongodb:27017/sausage_reports?authSource=admin
+
+backendReport:
+  image:
+    repository: selnastol/sausage-backend-report
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 2
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "64Mi"
+    limits:
+      cpu: "300m"
+      memory: "128Mi"
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    cpuUtilization: 75
+  mongoUrl: mongodb://sausage_user:sausage_password@mongodb:27017/sausage_reports?authSource=admin
+
+frontend:
+  image:
+    repository: selnastol/sausage-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  ingress:
+    enabled: true
+    host: sausage-store.local

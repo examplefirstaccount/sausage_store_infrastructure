@@ -1,0 +1,22 @@
+image:
+  repository: selnastol/sausage-backend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicas: 1
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 500Mi
+
+enableVPA: false
+
+postgres:
+  user: sausage_user
+  password: sausage_password
+postgresUrl: jdbc:postgresql://postgres:5432/sausage_db
+mongoUrl: mongodb://sausage_user:sausage_password@mongodb:27017/sausage_reports?authSource=admin
