@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
-  namespace: default
 spec:
   revisionHistoryLimit: 12 # Keeps 12 old ReplicaSets for potential rollbacks (default: 10)
   replicas: 1
@@ -22,7 +21,7 @@ spec:
       containers:
       - name: backend
         image: selnastol/sausage-backend:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: IfNotPresent # Better to use "Always" for production
         ports:
         - name: backend
           containerPort: 8080

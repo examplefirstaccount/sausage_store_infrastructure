@@ -1,5 +1,5 @@
 resources:
-- secrets.yaml
+# - secrets.yaml
 - configmap.yaml
 - deployment.yaml
 - hpa.yaml

@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-report
-  namespace: default
   labels:
     app: backend-report
 spec:
@@ -21,7 +20,7 @@ spec:
       containers:
       - name: backend-report
         image: selnastol/sausage-backend-report:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: IfNotPresent # Better to use "Always" for production
         resources:
           requests:
             memory: "64Mi"
