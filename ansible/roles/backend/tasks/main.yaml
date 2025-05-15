@@ -1,0 +1,56 @@
+- name: Install OpenJDK 16
+  apt:
+    name: openjdk-16-jdk
+    state: present
+
+- name: Create backend service user
+  user:
+    name: jarservice
+    system: yes
+    create_home: no
+    shell: /usr/sbin/nologin
+
+- name: Create backend directory
+  file:
+    path: /opt/sausage-store/backend
+    state: directory
+    owner: jarservice
+    group: jarservice
+    mode: '0755'
+
+- name: Create log directory for backend service
+  file:
+    path: /opt/log/
+    state: directory
+    owner: jarservice
+    group: jarservice
+    mode: '0755'
+
+- name: Download Backend Artifact from GitLab
+  get_url:
+    url: "https://gitlab.pg.innopolis.university/api/v4/projects/1881/packages/maven/com/yandex/practicum/devops/sausage-store/1.0.17240/sausage-store-1.0.17240.jar"
+    dest: /opt/sausage-store/backend/backend.jar
+    headers:
+      PRIVATE-TOKEN: "{{ gitlab_token }}"
+
+- name: Change ownership of backend.jar to jarservice
+  file:
+    path: /opt/sausage-store/backend/backend.jar
+    owner: jarservice
+    group: jarservice
+    mode: '0744'
+
+- name: Create systemd service for backend
+  template:
+    src: backend.service.j2
+    dest: /etc/systemd/system/backend.service
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start backend service
+  systemd:
+    name: backend
+    state: started
+    enabled: yes

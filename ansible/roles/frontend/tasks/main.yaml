@@ -1,0 +1,71 @@
+- name: Install Node.js, npm, and nginx
+  apt:
+    name:
+      - nodejs
+      - npm
+      - nginx
+    state: present
+
+- name: Create service user for frontend
+  user:
+    name: www-data
+    system: yes
+    create_home: no
+    shell: /usr/sbin/nologin
+
+- name: Create /var/www-data directory
+  file:
+    path: /var/www-data
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Ensure /var/www-data/dist exists
+  file:
+    path: /var/www-data/dist
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Download Frontend Artifact from GitLab
+  get_url:
+    url: "https://gitlab.pg.innopolis.university/api/v4/projects/1881/packages/generic/frontend/1.0.17239/frontend-1.0.17239.tar.gz"
+    dest: /var/www-data/frontend.tar.gz
+    headers:
+      PRIVATE-TOKEN: "{{ gitlab_token }}"
+
+- name: Change ownership of frontend.tar.gz to www-data
+  file:
+    path: /var/www-data/frontend.tar.gz
+    owner: www-data
+    group: www-data
+    mode: '0644'
+
+- name: Extract Frontend Files
+  ansible.builtin.unarchive:
+    src: /var/www-data/frontend.tar.gz
+    dest: /var/www-data/dist
+    remote_src: yes
+    owner: www-data
+    group: www-data
+
+- name: Deploy NGINX configuration
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/frontend
+  notify: Restart NGINX
+
+- name: Enable NGINX site configuration
+  file:
+    src: /etc/nginx/sites-available/frontend
+    dest: /etc/nginx/sites-enabled/frontend
+    state: link
+  notify: Restart NGINX
+
+- name: Remove default NGINX config
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Restart NGINX
