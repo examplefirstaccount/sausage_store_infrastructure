@@ -37,3 +37,7 @@ or
 ```
 
 Now your Grafana is available by `http://grafana.localhost:<cluster-ingress-controller-port>` (default port for cluster ingress controller is 80)
+
+5. Configure datasources in Grafana
+
+Log in to Grafana and in settings add new Loki connection. In the URL field specify `http://loki:3100`. Now you can see logs.
