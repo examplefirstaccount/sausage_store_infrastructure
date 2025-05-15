@@ -1,0 +1,6 @@
+resources:
+- secrets.yaml
+- configmap.yaml
+- deployment.yaml
+# - vpa.yaml # vpa need to be installed separately
+- service.yaml

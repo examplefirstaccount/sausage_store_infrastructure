@@ -1,0 +1,19 @@
+apiVersion: v2
+name: sausage-store-chart
+description: Helm chart for the Sausage Store application stack
+type: application
+
+version: 0.1.0
+appVersion: "latest"
+
+dependencies:
+- name: backend
+  version: 0.1.0
+- name: backend_report
+  version: 0.1.0
+- name: frontend
+  version: 0.1.0
+- name: postgres
+  version: 0.1.0
+- name: mongodb
+  version: 0.1.0

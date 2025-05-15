@@ -1,0 +1,22 @@
+image:
+  repository: selnastol/sausage-backend-report
+  tag: latest
+  pullPolicy: IfNotPresent
+
+replicas: 2
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "64Mi"
+  limits:
+    cpu: "300m"
+    memory: "128Mi"
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  cpuUtilization: 75
+
+mongoUrl: mongodb://sausage_user:sausage_password@mongodb:27017/sausage_reports?authSource=admin
