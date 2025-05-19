@@ -12,6 +12,43 @@ server:
       memory: 512Mi
       cpu: 500m
 
+alertmanager:
+  enabled: true
+
+  persistence:
+    size: 2Gi
+
+  podSecurityContext:
+    runAsUser: 65534
+    runAsNonRoot: true
+    runAsGroup: 65534
+    fsGroup: 65534
+
+  config:
+    enabled: true
+    global:
+      resolve_timeout: 1m
+    route:
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 30m
+      receiver: "telegram"
+      routes:
+      - receiver: "telegram"
+        group_wait: 10s
+        match_re:
+          severity: critical|warning
+        continue: true
+    receivers:
+    - name: "telegram"
+      telegram_configs:
+      - send_resolved: true
+        bot_token: 7659472996:AAFvXeLIijPOWN_6Oa5VHCfYKEsiXESwn6k
+        api_url: https://api.telegram.org
+        chat_id: 6640514132
+        parse_mode: ""
+        message: "{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}"
+
 serverFiles:
   alerting_rules.yml:
     groups:
@@ -24,8 +61,27 @@ serverFiles:
           severity: critical
           project: "sausage_store"
           component: "Backend"
+      - alert: Code500
+        expr: http_server_requests_seconds_count{status="500", app="backend"} > 0
+        labels:
+          severity: critical
+          project: "sausage_store"
+          component: "Backend"
+      - alert: More then 100ms latency
+        expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket{status=~"2..",method="POST",uri="/api/orders"}[5m]) > 0.1)
+        labels:
+          severity: critical
+          project: "sausage_store"
+          component: "Backend"
+      - alert: error CODE (3xx,4xx,5xx)
+        expr: rate(http_server_requests_seconds_count{uri="/actuator/prometheus", status!~"2.."}[1m]) > 0
+        labels:
+          severity: critical
+          project: "sausage_store"
+          component: "Backend"
 
   recording_rules.yml: {}
+
   prometheus.yml:
     rule_files:
     - /etc/config/recording_rules.yml
