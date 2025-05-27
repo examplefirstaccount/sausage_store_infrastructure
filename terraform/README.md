@@ -1,26 +1,26 @@
-# 🚀 Root Terraform Module
+# Terraform Module for Sausage Store
 This Terraform root module orchestrates the deployment of network infrastructure and compute instances in Yandex Cloud. It integrates child modules for streamlined resource management.
 
-## 📦 Dependencies
+## Dependencies
 
 - **Child Modules:**
   - `tf-yc-network`: Manages network configurations.
   - `tf-yc-instance`: Provisions compute instances.
 
-## 🗄️ Providers
+## Providers
 
 - **Yandex Cloud Provider:**
   - Source: `yandex-cloud/yandex`
   - Version: `>= 0.87.0`
 
-## 📝 Requirements
+## Requirements
 
 - **Terraform Version:** `>= 0.13`
 - **Environment Variables:**
   - `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` for S3 backend.
   - `TF_VAR_token`, `TF_VAR_cloud_id`, `TF_VAR_folder_id` for Yandex Cloud authentication.
 
-## 🚀 Usage
+## Usage
 
 ```hcl
 module "network" {
@@ -34,7 +34,7 @@ module "instance" {
 }
 ```
 
-## 🔐 Setting Sensitive Variables
+## Setting Sensitive Variables
 
 For Yandex Cloud CLI users:
 ```bash
@@ -52,7 +52,7 @@ export AWS_ACCESS_KEY_ID="<your-static-access-key-id>"
 export AWS_SECRET_ACCESS_KEY="<your-static-access-key-secret>"
 ```
 
-## 🔧 Variables
+## Variables
 
 | Name        | Description                                  | Type   | Default         | Required |
 |-------------|----------------------------------------------|--------|-----------------|----------|
@@ -61,7 +61,7 @@ export AWS_SECRET_ACCESS_KEY="<your-static-access-key-secret>"
 | `cloud_id`  | Y.Cloud cloud ID (sensitive)                 | string | N/A             | Yes      |
 | `folder_id` | Y.Cloud folder ID within the cloud (sensitive) | string | N/A             | Yes      |
 
-## 🔧 Backend Configuration
+## Backend Configuration
 
 - **Y.Cloud S3 Backend:**
   - Endpoint: `https://storage.yandexcloud.net`
