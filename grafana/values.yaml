@@ -1,0 +1,26 @@
+image:
+  tag: 9.5.0 # IMPORTANT to use version the of Grafana which is compatible with Loki
+adminUser: admin
+adminPassword: "admin123" # Change this!
+persistence:
+  enabled: true
+  size: 1Gi
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  hosts:
+  - grafana.localhost # Replace with your domain or keep for local testing
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+# datasources:
+#   datasources.yaml:
+#     apiVersion: 1
+#     datasources:
+#     - name: Prometheus
+#       type: prometheus
+#       url: http://prometheus-server.monitoring.svc.cluster.local
+#       access: proxy
+#     - name: Loki
+#       type: loki
+#       url: http://loki:3100

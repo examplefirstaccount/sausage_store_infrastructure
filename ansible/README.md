@@ -1,4 +1,4 @@
-# Ansible Toy Example
+# Ansible for Sausage Store
 
 ## 🛠 Prerequisites
 
